@@ -1,0 +1,21 @@
+{
+    "name": "shu-global/redis-manager",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ShuGlobal\\RedisManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sarinthon Mangkorn-ngam",
+            "email": "sarinthonton@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "predis/predis": "^2.0",
+        "illuminate/support": "^9.21"
+    }
+}
