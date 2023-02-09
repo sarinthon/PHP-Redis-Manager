@@ -6,12 +6,20 @@ use Predis\Client;
 
 class RedisManager
 {
+    private static Client|null $client = null;
+
     private static function getRedisClient() {
-        return new Client([
+        if (isset(self::$client)) {
+            return self::$client;
+        }
+
+        self::$client = new Client([
             'host'   => env("REDIS_HOST"),
             'port'   => env("REDIS_PORT"),
             'password' => env("REDIS_PASSWORD")
         ]);
+
+        return self::$client;
     }
 
     public static function getCache($cacheName) {
