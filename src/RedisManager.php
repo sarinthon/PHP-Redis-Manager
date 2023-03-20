@@ -22,6 +22,8 @@ class RedisManager
         return self::$client;
     }
 
+    // = = = Key-Value
+
     public static function getCache($cacheName) {
         $client = self::getRedisClient();
         return json_decode($client->get($cacheName));
@@ -35,6 +37,8 @@ class RedisManager
 
         self::setExpiration($client, $cacheName, $second, $timestamp);
     }
+
+    // = = = Array
 
     public static function pushCache($cacheName, Array $data, int $second = null, int $timestamp = null) {
         if (count($data) == 0) {return;}
@@ -50,10 +54,51 @@ class RedisManager
         return $client->lpop($cacheName);
     }
 
+    //  = = = Score
+
+    public static function increseScore(string $cacheName, int $incr, string $member) {
+        $client = self::getRedisClient();
+        $client->zincrby($cacheName, $incr, $member);
+    }
+
+    public static function getScore(string $cacheName, int $start=0, int $end=-1) {
+        $client = self::getRedisClient();
+        return $client->zrange($cacheName, $start, $end);
+    }
+
     public static function getCacheArray($cacheName, $start = 0, $stop = -1) {
         $client = self::getRedisClient();
         return $client->lrange($cacheName, $start, $stop);
     }
+
+    // = = = JSON
+
+    public static function setJSON(string $cacheName, string $data) {
+        $client = self::getRedisClient();
+        $client->executeRaw(["JSON.SET", $cacheName, '.', $data]);
+    }
+
+    public static function appendJSON(string $cacheName, string $data, string $path="$") {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["JSON.ARRAPPEND", $cacheName, $path, $data]);
+    }
+
+    public static function getJSON(string $cacheName, string $path="$") {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["JSON.GET", $cacheName, $path]);
+    }
+
+    public static function arrayIndexJSON(string $cacheName, string $search, string $path="$") {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["JSON.ARRINDEX", $cacheName, $path, $search]);
+    }
+
+    public static function numIncrbyJSON(string $cacheName, string $number, string $path="$") {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["JSON.NUMINCRBY", $cacheName, $path, $number]);
+    }
+
+    // = = = Utility
 
     public static function cacheExist($cacheName) {
         return self::getTTL($cacheName) != -2;
@@ -63,8 +108,6 @@ class RedisManager
         $client = self::getRedisClient();
         return $client->ttl($cacheName);
     }
-
-    // Utility
 
     private static function setExpiration($client, $cacheName, int $second = null, int $timestamp = null) {
         if (isset($second)) {

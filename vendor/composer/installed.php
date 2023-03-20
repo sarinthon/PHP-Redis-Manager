@@ -1,11 +1,11 @@
 <?php return array(
     'root' => array(
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => NULL,
+        'reference' => '2c19ad81fc66b8d878419c67954a64d58bfdfc2e',
         'name' => 'shu-global/redis-manager',
         'dev' => true,
     ),
@@ -101,12 +101,12 @@
             'dev_requirement' => false,
         ),
         'shu-global/redis-manager' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => NULL,
+            'reference' => '2c19ad81fc66b8d878419c67954a64d58bfdfc2e',
             'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
