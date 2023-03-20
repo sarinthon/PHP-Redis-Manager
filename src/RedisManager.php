@@ -104,6 +104,11 @@ class RedisManager
         return self::getTTL($cacheName) != -2;
     }
 
+    public static function deleteCache(string $cacheName) {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["DEL", $cacheName]);
+    }
+
     public static function getTTL($cacheName) {
         $client = self::getRedisClient();
         return $client->ttl($cacheName);
