@@ -73,9 +73,9 @@ class RedisManager
 
     // = = = JSON
 
-    public static function setJSON(string $cacheName, string $data) {
+    public static function setJSON(string $cacheName, string $data, string $path="$") {
         $client = self::getRedisClient();
-        $client->executeRaw(["JSON.SET", $cacheName, '.', $data]);
+        $client->executeRaw(["JSON.SET", $cacheName, $path, $data]);
     }
 
     public static function appendJSON(string $cacheName, string $data, string $path="$") {
