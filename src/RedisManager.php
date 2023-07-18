@@ -6,18 +6,22 @@ use Predis\Client;
 
 class RedisManager
 {
-    private static Client|null $client = null;
+    private static ?Client $client = null;
+
+    private static ?array $parameters = null;
+    private static ?array $options = null;
+
+    public static function setup($parameters, $options) {
+        self::$parameters = $parameters;
+        self::$options = $options;
+    }
 
     private static function getRedisClient() {
         if (isset(self::$client)) {
             return self::$client;
         }
 
-        self::$client = new Client([
-            'host'   => env("REDIS_HOST"),
-            'port'   => env("REDIS_PORT"),
-            'password' => env("REDIS_PASSWORD")
-        ]);
+        self::$client = new Client(self::$parameters,self::$options);
 
         return self::$client;
     }
