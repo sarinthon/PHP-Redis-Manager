@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of the Carbon package.
  *
@@ -24,6 +26,22 @@ use Throwable;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
+    /** @var callable|null */
+    protected $appGetter = null;
+
+    /** @var callable|null */
+    protected $localeGetter = null;
+
+    public function setAppGetter(?callable $appGetter): void
+    {
+        $this->appGetter = $appGetter;
+    }
+
+    public function setLocaleGetter(?callable $localeGetter): void
+    {
+        $this->localeGetter = $localeGetter;
+    }
+
     public function boot()
     {
         $this->updateLocale();
@@ -44,8 +62,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function updateLocale()
     {
-        $app = $this->app && method_exists($this->app, 'getLocale') ? $this->app : app('translator');
-        $locale = $app->getLocale();
+        $locale = $this->getLocale();
+
+        if ($locale === null) {
+            return;
+        }
+
         Carbon::setLocale($locale);
         CarbonImmutable::setLocale($locale);
         CarbonPeriod::setLocale($locale);
@@ -59,7 +81,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             try {
                 $root = Date::getFacadeRoot();
                 $root->setLocale($locale);
-            } catch (Throwable $e) {
+            } catch (Throwable) {
                 // Non Carbon class in use in Date facade
             }
         }
@@ -68,6 +90,34 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
         // Needed for Laravel < 5.3 compatibility
+    }
+
+    protected function getLocale()
+    {
+        if ($this->localeGetter) {
+            return ($this->localeGetter)();
+        }
+
+        $app = $this->getApp();
+        $app = $app && method_exists($app, 'getLocale')
+            ? $app
+            : $this->getGlobalApp('translator');
+
+        return $app ? $app->getLocale() : null;
+    }
+
+    protected function getApp()
+    {
+        if ($this->appGetter) {
+            return ($this->appGetter)();
+        }
+
+        return $this->app ?? $this->getGlobalApp();
+    }
+
+    protected function getGlobalApp(...$args)
+    {
+        return \function_exists('app') ? \app(...$args) : null;
     }
 
     protected function isEventDispatcher($instance)
