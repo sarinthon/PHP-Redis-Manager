@@ -102,6 +102,11 @@ class RedisManager
         return $client->executeRaw(["JSON.NUMINCRBY", $cacheName, $path, $number]);
     }
 
+    public static function arrpopJSON(string $cacheName, string $data, string $path="$") {
+        $client = self::getRedisClient();
+        return $client->executeRaw(["JSON.ARRPOP", $cacheName, $path, $data]);
+    }
+
     // = = = Utility
 
     public static function cacheExist($cacheName) {
